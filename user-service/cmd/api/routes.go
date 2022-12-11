@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/girigirig/user-service/cmd/jwt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -23,5 +24,6 @@ func (app *Config) routes() http.Handler {
 
 	mux.Use(middleware.Heartbeat("/ping"))
 	mux.Get("/user", app.LogIn)
+	mux.Get("/home", jwt.Authorization(app.Home))
 	return mux
 }

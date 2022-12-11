@@ -3,38 +3,23 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/girigirig/user-service/cmd/jwt"
 )
 
-var secretKey = []byte(os.Getenv("SECRET"))
-
 func (app *Config) LogIn(w http.ResponseWriter, r *http.Request) {
-	token, err := generateJwtToken()
+	token, err := jwt.GenerateJwtToken()
 	if err != nil {
 		log.Println(err.Error())
+	}
+
+	if err = jwt.ValidateToken(token); err != nil {
+		return
 	}
 
 	w.Write([]byte(token))
 }
 
-func generateJwtToken() (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(10 * time.Minute)
-	claims["authorized"] = true
-	claims["user"] = "Gideon"
-
-	signedToken, err := token.SignedString(secretKey)
-	if err != nil {
-		return "", err
-	}
-	return signedToken, nil
-}
-
-func verifyJWT(next func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
-	
+func (app *Config) Home(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Home"))
 }
